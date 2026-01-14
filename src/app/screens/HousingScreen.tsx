@@ -1,45 +1,91 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Card } from '../components/Card';
 import { Chip } from '../components/Chip';
 import { Button } from '../components/Button';
+import { useLocalStorageSet } from '../hooks/useLocalStorage';
+import { useShare } from '../hooks/useShare';
 
 interface HousingScreenProps {
   onOpenAI: () => void;
 }
 
-// Simple internal ImageSlideshow component
+// Enhanced ImageSlideshow component with navigation controls
 const ImageSlideshow = ({ images }: { images: string[] }) => {
   const [index, setIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    // Subtle auto-advance or just let user click. 
-    // To keep it "calm", maybe no auto-advance, just manual or slow fade?
-    // Let's do a slow fade every 5s
+    if (isPaused) return;
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [images.length]);
+  }, [images.length, isPaused]);
+
+  const goToSlide = (i: number) => {
+    setIndex(i);
+    setIsPaused(true);
+    setTimeout(() => setIsPaused(false), 8000);
+  };
+
+  const goNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    goToSlide((index + 1) % images.length);
+  };
+
+  const goPrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    goToSlide((index - 1 + images.length) % images.length);
+  };
 
   return (
-    <div className="absolute inset-0 bg-gray-100">
+    <div className="absolute inset-0 bg-gray-900 group/slideshow">
       {images.map((img, i) => (
         <div
           key={img}
-          className={`absolute inset-0 transition-opacity duration-1000 ${i === index ? 'opacity-100' : 'opacity-0'
-            }`}
+          className={`absolute inset-0 transition-opacity duration-700 ${i === index ? 'opacity-100' : 'opacity-0'}`}
         >
-          <img src={img} alt="Department" className="w-full h-full object-cover" />
+          <img src={img} alt="Apartment" className="w-full h-full object-cover" />
         </div>
       ))}
 
-      {/* Dots */}
-      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+      {/* Navigation Arrows - appear on hover */}
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={goPrev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white opacity-0 group-hover/slideshow:opacity-100 transition-all hover:bg-black/60 hover:scale-110 z-20"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={goNext}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white opacity-0 group-hover/slideshow:opacity-100 transition-all hover:bg-black/60 hover:scale-110 z-20"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </>
+      )}
+
+      {/* Image counter */}
+      <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white text-xs font-medium z-10 border border-white/10">
+        {index + 1} / {images.length}
+      </div>
+
+      {/* Clickable Dots */}
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-2 z-10">
         {images.map((_, i) => (
-          <div
+          <button
             key={i}
-            className={`w-1.5 h-1.5 rounded-full transition-all ${i === index ? 'bg-white scale-125' : 'bg-white/50'
-              }`}
+            onClick={(e) => { e.stopPropagation(); goToSlide(i); }}
+            className={`w-2 h-2 rounded-full transition-all hover:scale-125 ${
+              i === index ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/70'
+            }`}
           />
         ))}
       </div>
@@ -50,10 +96,51 @@ const ImageSlideshow = ({ images }: { images: string[] }) => {
 export function HousingScreen({ onOpenAI }: HousingScreenProps) {
   const [activeTab, setActiveTab] = useState('listings');
   const [mounted, setMounted] = useState(false);
+  const [savedListings, addSavedListing, removeSavedListing] = useLocalStorageSet('murge_saved_listings');
+  const [joinedGroups, addJoinedGroup] = useLocalStorageSet('murge_joined_groups');
+  const [joiningGroup, setJoiningGroup] = useState<string | null>(null);
+  const { shareHousing } = useShare();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSaveListing = (listingTitle: string) => {
+    if (savedListings.has(listingTitle)) {
+      removeSavedListing(listingTitle);
+      toast.info(`Removed ${listingTitle} from saved`, {
+        description: 'You can save it again anytime',
+      });
+    } else {
+      addSavedListing(listingTitle);
+      toast.success(`Saved ${listingTitle}!`, {
+        description: 'Added to your saved listings',
+      });
+    }
+  };
+
+  const handleJoinGroup = (groupName: string) => {
+    if (joinedGroups.has(groupName)) {
+      toast.info(`You're already a member of ${groupName}`);
+      return;
+    }
+
+    setJoiningGroup(groupName);
+
+    setTimeout(() => {
+      addJoinedGroup(groupName);
+      setJoiningGroup(null);
+      toast.success(`Joined ${groupName}!`, {
+        description: 'You can now see group discussions',
+      });
+    }, 600);
+  };
+
+  const handleViewRoommate = (name: string) => {
+    toast.info(`Opening ${name}'s profile...`, {
+      description: 'Profile view coming soon!',
+    });
+  };
 
   const tabs = [
     {
@@ -201,11 +288,34 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
                         <p className="text-xl font-light text-white/90">{listing.price}</p>
                       </div>
 
-                      <button className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-transform">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => shareHousing({ title: listing.title, price: listing.price })}
+                          className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center hover:scale-110 hover:bg-white/30 transition-all"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleSaveListing(listing.title)}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-all ${
+                            savedListings.has(listing.title)
+                              ? 'bg-black text-white'
+                              : 'bg-white text-black'
+                          }`}
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill={savedListings.has(listing.title) ? "currentColor" : "none"}
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -246,7 +356,10 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
                       <span className="px-3 py-1.5 rounded-full bg-white text-black text-xs font-bold shadow-lg">
                         {roommate.matchPercent}% Match
                       </span>
-                      <button className="opacity-0 group-hover:opacity-100 transition-opacity text-white/60 hover:text-white text-sm font-medium">
+                      <button
+                        onClick={() => handleViewRoommate(roommate.name)}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-white/60 hover:text-white text-sm font-medium"
+                      >
                         View Profile →
                       </button>
                     </div>
@@ -297,8 +410,33 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
                           <span className="text-xs text-white/60 font-medium">new</span>
                         </div>
                       ) : (
-                        <button className="px-4 py-2 bg-white/10 border border-white/20 rounded-xl text-sm font-semibold text-white hover:bg-white hover:text-black transition-all">
-                          Join
+                        <button
+                          onClick={() => handleJoinGroup(group.name)}
+                          disabled={joiningGroup === group.name || joinedGroups.has(group.name)}
+                          className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                            joinedGroups.has(group.name)
+                              ? 'bg-white text-black'
+                              : 'bg-white/10 border border-white/20 text-white hover:bg-white hover:text-black'
+                          } disabled:opacity-50`}
+                        >
+                          {joiningGroup === group.name ? (
+                            <span className="flex items-center gap-2">
+                              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                              </svg>
+                              Joining...
+                            </span>
+                          ) : joinedGroups.has(group.name) ? (
+                            <span className="flex items-center gap-1">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              Joined
+                            </span>
+                          ) : (
+                            'Join'
+                          )}
                         </button>
                       )}
                     </div>

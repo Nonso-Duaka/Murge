@@ -10,24 +10,26 @@ interface Tab {
 interface TabBarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
-  badges?: Record<string, number>;
+  badges?: Record<string, number | undefined>;
+  onNotificationClick?: () => void;
 }
 
-export function TabBar({ activeTab, onTabChange, badges = {} }: TabBarProps) {
+export function TabBar({ activeTab, onTabChange, badges = {}, onNotificationClick }: TabBarProps) {
   const tabs: Tab[] = [
     { id: 'dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', badge: badges.dashboard },
-    { id: 'workspace', label: 'Workspace', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', badge: badges.workspace },
+    { id: 'find-people', label: 'Find People', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', badge: badges.findPeople },
     { id: 'housing', label: 'Housing', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', badge: badges.housing },
+    { id: 'workspace', label: 'Workspace', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', badge: badges.workspace },
     { id: 'explore', label: 'Explore', icon: 'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9', badge: badges.explore },
   ];
 
   const activeIndex = tabs.findIndex(tab => tab.id === activeTab);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-2xl z-40">
+    <div className="fixed bottom-0 left-0 right-0 backdrop-blur-2xl border-t border-white/20 shadow-[0_-4px_30px_rgba(0,0,0,0.1)] z-40">
       {/* Active Indicator */}
       <div
-        className="absolute top-0 h-0.5 bg-black transition-all duration-300 ease-out"
+        className="absolute top-0 h-0.5 bg-gradient-to-r from-black via-gray-800 to-black transition-all duration-300 ease-out shadow-lg"
         style={{
           width: `${100 / tabs.length}%`,
           left: `${(activeIndex * 100) / tabs.length}%`,
@@ -46,8 +48,8 @@ export function TabBar({ activeTab, onTabChange, badges = {} }: TabBarProps) {
                 transition-all duration-200
                 active:scale-95
                 ${isActive
-                  ? 'text-black'
-                  : 'text-gray-400 hover:text-black hover:bg-gray-50'
+                  ? 'text-white'
+                  : 'text-white/50 hover:text-white/80 hover:bg-white/10 backdrop-blur-sm'
                 }
               `}
             >

@@ -13,9 +13,11 @@ interface Activity {
 interface DashboardScreenProps {
   cityName?: string;
   onOpenProfile?: () => void;
+  onOpenSearch?: () => void;
+  onOpenNotifications?: () => void;
 }
 
-export function DashboardScreen({ cityName = 'San Francisco', onOpenProfile }: DashboardScreenProps) {
+export function DashboardScreen({ cityName = 'San Francisco', onOpenProfile, onOpenSearch, onOpenNotifications }: DashboardScreenProps) {
   const [mounted, setMounted] = useState(false);
   const [progress] = useState(65);
 
@@ -92,13 +94,36 @@ export function DashboardScreen({ cityName = 'San Francisco', onOpenProfile }: D
               {cityName}
             </p>
           </div>
-          {/* Profile Button */}
-          <button
-            onClick={onOpenProfile}
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-white to-white/80 flex items-center justify-center text-black font-bold text-lg hover:scale-110 transition-transform shadow-lg"
-          >
-            JM
-          </button>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            {/* Search Button */}
+            <button
+              onClick={onOpenSearch}
+              className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+            {/* Notifications Button */}
+            <button
+              onClick={onOpenNotifications}
+              className="relative w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {/* Notification dot */}
+              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-white rounded-full" />
+            </button>
+            {/* Profile Button */}
+            <button
+              onClick={onOpenProfile}
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-white to-white/80 flex items-center justify-center text-black font-bold text-lg hover:scale-110 transition-transform shadow-lg"
+            >
+              JM
+            </button>
+          </div>
         </div>
       </div>
 
@@ -127,6 +152,7 @@ export function DashboardScreen({ cityName = 'San Francisco', onOpenProfile }: D
             </div>
           </Card>
         </div>
+
 
         {/* Progress Card - Featured Glass */}
         <div

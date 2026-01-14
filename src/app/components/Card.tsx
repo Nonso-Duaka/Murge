@@ -5,7 +5,7 @@ interface CardProps {
   className?: string;
   onClick?: () => void;
   hoverable?: boolean;
-  variant?: 'default' | 'elevated' | 'glass' | 'gradient-border' | 'interactive';
+  variant?: 'default' | 'elevated' | 'glass' | 'glass-dark' | 'glass-light' | 'gradient-border' | 'interactive';
   padding?: 'none' | 'sm' | 'md' | 'lg';
 }
 
@@ -28,6 +28,8 @@ export function Card({
     default: 'bg-card text-card-foreground border border-border shadow-sm',
     elevated: 'bg-card text-card-foreground border border-border shadow-md hover:shadow-lg',
     glass: 'bg-white/80 backdrop-blur-xl border border-white/40 shadow-glass',
+    'glass-dark': 'bg-white/10 backdrop-blur-xl border border-white/20 text-white shadow-2xl',
+    'glass-light': 'bg-white/90 backdrop-blur-xl border border-white/50 text-black shadow-lg',
     'gradient-border': 'bg-card border border-border relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-brand-primary/10 before:to-brand-primary/5 before:opacity-0 hover:before:opacity-100 transition-all',
     interactive: 'bg-card border border-border shadow-sm hover:shadow-md hover:border-brand-primary/20'
   };
