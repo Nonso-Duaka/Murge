@@ -351,7 +351,7 @@ export function WorkspaceScreen({ cityName = 'San Francisco' }: WorkspaceScreenP
         </div>
 
         {/* Fixed Input Area - Bottom */}
-        <div className="p-4 sm:px-6 border-t border-white/10 bg-black/40 backdrop-blur-xl z-30 mb-safe">
+        <div className="p-4 sm:px-6 border-t border-white/10 bg-black/40 backdrop-blur-xl z-30 mb-safe pb-24 lg:pb-6">
           <div className="relative max-w-screen-xl mx-auto">
             <input
               type="text"
