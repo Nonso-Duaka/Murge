@@ -289,7 +289,7 @@ export default function App() {
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Persistent Logo Overlay */}
       {currentScreen !== 'enter-code' && currentScreen !== 'select-location' && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none mix-blend-difference">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none">
           <div className="relative group">
             <div className="absolute inset-0 bg-white/30 blur-2xl rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
             <img
