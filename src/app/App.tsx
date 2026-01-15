@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Toaster } from 'sonner';
+// @ts-ignore
+import murgeLogoImage from '../assets/murge-logo-final.png';
 import { EnterCodeScreen } from './screens/EnterCodeScreen';
 import { SelectLocationScreen } from './screens/SelectLocationScreen';
 import { DashboardScreen } from './screens/DashboardScreen';
@@ -16,10 +18,11 @@ import { FavoritesScreen } from './screens/FavoritesScreen';
 import { ChecklistScreen } from './screens/ChecklistScreen';
 import { BudgetCalculatorScreen } from './screens/BudgetCalculatorScreen';
 import { NeighborhoodGuideScreen } from './screens/NeighborhoodGuideScreen';
+import { ActivityFeedScreen } from './screens/ActivityFeedScreen';
+import { CalendarScreen } from './components/Calendar';
 import { TabBar } from './components/TabBar';
 import { GlobalSearch } from './components/GlobalSearch';
 import { CommandPalette, useCommands } from './components/CommandPalette';
-import { OnboardingTour, useTour } from './components/OnboardingTour';
 import { useAppState, useNotifications } from './hooks/useLocalStorage';
 
 type Screen =
@@ -38,12 +41,13 @@ type Screen =
   | 'favorites'
   | 'checklist'
   | 'budget'
-  | 'neighborhood-guide';
+  | 'neighborhood-guide'
+  | 'activity-feed'
+  | 'calendar';
 
 export default function App() {
   const { state: appState, updateState: updateAppState } = useAppState();
   const { unreadCount: notificationCount } = useNotifications();
-  const { showTour, completeTour, hasSeenTour } = useTour();
 
   const [currentScreen, setCurrentScreen] = useState<Screen>('enter-code');
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -54,7 +58,6 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-  const [showOnboardingTour, setShowOnboardingTour] = useState(false);
 
   // Check onboarding status on mount
   useEffect(() => {
@@ -67,6 +70,21 @@ export default function App() {
     }
     setIsLoading(false);
   }, []);
+
+  // Keyboard listener for Cmd+K command palette
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        if (currentScreen !== 'enter-code' && currentScreen !== 'select-location') {
+          setIsCommandPaletteOpen(true);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentScreen]);
 
   const handleEnterCode = (code: string) => {
     setCompanyCode(code);
@@ -163,6 +181,46 @@ export default function App() {
     setCurrentScreen('dashboard');
   };
 
+  const handleOpenChecklist = () => {
+    setCurrentScreen('checklist');
+  };
+
+  const handleBackFromChecklist = () => {
+    setCurrentScreen('dashboard');
+  };
+
+  const handleOpenBudget = () => {
+    setCurrentScreen('budget');
+  };
+
+  const handleBackFromBudget = () => {
+    setCurrentScreen('dashboard');
+  };
+
+  const handleOpenNeighborhoodGuide = () => {
+    setCurrentScreen('neighborhood-guide');
+  };
+
+  const handleBackFromNeighborhoodGuide = () => {
+    setCurrentScreen('explore');
+  };
+
+  const handleOpenActivityFeed = () => {
+    setCurrentScreen('activity-feed');
+  };
+
+  const handleBackFromActivityFeed = () => {
+    setCurrentScreen('dashboard');
+  };
+
+  const handleOpenCalendar = () => {
+    setCurrentScreen('calendar');
+  };
+
+  const handleBackFromCalendar = () => {
+    setCurrentScreen('dashboard');
+  };
+
   const handleLogout = () => {
     updateAppState({
       hasCompletedOnboarding: false,
@@ -197,7 +255,26 @@ export default function App() {
     }
   };
 
-  const showTabBar = !['enter-code', 'select-location', 'ai-agent', 'recommended-housing', 'profile', 'settings', 'notifications', 'favorites'].includes(currentScreen);
+  // Command palette commands (must be after all handlers are defined)
+  const commands = useCommands({
+    onNavigateDashboard: () => { setActiveTab('dashboard'); setCurrentScreen('dashboard'); },
+    onNavigateHousing: () => { setActiveTab('housing'); setCurrentScreen('housing'); },
+    onNavigatePeople: () => { setActiveTab('find-people'); setCurrentScreen('find-others'); },
+    onNavigateExplore: () => { setActiveTab('explore'); setCurrentScreen('explore'); },
+    onNavigateWorkspace: () => { setActiveTab('workspace'); setCurrentScreen('workspace'); },
+    onOpenProfile: handleOpenProfile,
+    onOpenSettings: handleOpenSettings,
+    onOpenNotifications: handleOpenNotifications,
+    onOpenSearch: handleOpenSearch,
+    onOpenAIAgent: handleOpenAI,
+    onOpenChecklist: handleOpenChecklist,
+    onOpenBudget: handleOpenBudget,
+    onOpenNeighborhoodGuide: handleOpenNeighborhoodGuide,
+    onOpenActivityFeed: handleOpenActivityFeed,
+    onOpenCalendar: handleOpenCalendar,
+  });
+
+  const showTabBar = !['enter-code', 'select-location', 'ai-agent', 'recommended-housing', 'profile', 'settings', 'notifications', 'favorites', 'checklist', 'budget', 'neighborhood-guide', 'activity-feed', 'calendar'].includes(currentScreen);
 
   // Show loading screen while checking onboarding
   if (isLoading) {
@@ -210,6 +287,20 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      {/* Persistent Logo Overlay */}
+      {currentScreen !== 'enter-code' && currentScreen !== 'select-location' && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none mix-blend-difference">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-white/30 blur-2xl rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
+            <img
+              src={murgeLogoImage}
+              alt="Murge"
+              className="h-12 w-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.6)] opacity-100 transition-transform duration-300 group-hover:scale-110"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Toast Notifications */}
       <Toaster
         position="top-center"
@@ -262,6 +353,9 @@ export default function App() {
             onOpenProfile={handleOpenProfile}
             onOpenSearch={handleOpenSearch}
             onOpenNotifications={handleOpenNotifications}
+            onOpenChecklist={handleOpenChecklist}
+            onOpenBudget={handleOpenBudget}
+            onOpenActivityFeed={handleOpenActivityFeed}
           />
         )}
 
@@ -299,7 +393,27 @@ export default function App() {
           <FavoritesScreen onBack={handleBackFromFavorites} />
         )}
 
-        {currentScreen === 'explore' && <ExploreScreen />}
+        {currentScreen === 'explore' && <ExploreScreen onOpenNeighborhoodGuide={handleOpenNeighborhoodGuide} />}
+
+        {currentScreen === 'checklist' && (
+          <ChecklistScreen onBack={handleBackFromChecklist} />
+        )}
+
+        {currentScreen === 'budget' && (
+          <BudgetCalculatorScreen onBack={handleBackFromBudget} />
+        )}
+
+        {currentScreen === 'neighborhood-guide' && (
+          <NeighborhoodGuideScreen onBack={handleBackFromNeighborhoodGuide} />
+        )}
+
+        {currentScreen === 'activity-feed' && (
+          <ActivityFeedScreen onBack={handleBackFromActivityFeed} />
+        )}
+
+        {currentScreen === 'calendar' && (
+          <CalendarScreen onBack={handleBackFromCalendar} />
+        )}
 
         {/* Tab Bar Navigation */}
         {showTabBar && (
@@ -312,28 +426,41 @@ export default function App() {
         )}
       </div>
 
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        commands={commands}
+      />
+
       {/* Quick Navigation Helper (for demo purposes) */}
       {currentScreen !== 'enter-code' && currentScreen !== 'select-location' && (
-        <div className="fixed top-4 right-4 bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-xs max-w-xs z-50 hidden lg:block">
-          <div className="font-medium text-gray-900 mb-2">Quick Nav:</div>
+        <div className="fixed top-4 right-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-lg p-3 text-xs max-w-xs z-50 hidden lg:block">
+          <div className="font-medium text-white mb-2">Quick Nav (⌘K):</div>
           <div className="space-y-1">
             <button
               onClick={() => setCurrentScreen('find-others')}
-              className="block w-full text-left text-gray-600 hover:text-black"
+              className="block w-full text-left text-white/60 hover:text-white"
             >
               → Find Others
             </button>
             <button
               onClick={() => setCurrentScreen('ai-agent')}
-              className="block w-full text-left text-gray-600 hover:text-black"
+              className="block w-full text-left text-white/60 hover:text-white"
             >
               → AI Agent
             </button>
             <button
-              onClick={() => setCurrentScreen('recommended-housing')}
-              className="block w-full text-left text-gray-600 hover:text-black"
+              onClick={handleOpenChecklist}
+              className="block w-full text-left text-white/60 hover:text-white"
             >
-              → Recommendations
+              → Checklist
+            </button>
+            <button
+              onClick={handleOpenBudget}
+              className="block w-full text-left text-white/60 hover:text-white"
+            >
+              → Budget Calculator
             </button>
           </div>
         </div>

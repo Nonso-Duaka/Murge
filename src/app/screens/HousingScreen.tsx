@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { Card } from '../components/Card';
 import { Chip } from '../components/Chip';
 import { Button } from '../components/Button';
 import { useLocalStorageSet } from '../hooks/useLocalStorage';
 import { useShare } from '../hooks/useShare';
+import { MapView, MapModal } from '../components/MapView';
+import { ComparisonTool, ComparisonBar } from '../components/ComparisonTool';
 
 interface HousingScreenProps {
   onOpenAI: () => void;
@@ -83,9 +85,8 @@ const ImageSlideshow = ({ images }: { images: string[] }) => {
           <button
             key={i}
             onClick={(e) => { e.stopPropagation(); goToSlide(i); }}
-            className={`w-2 h-2 rounded-full transition-all hover:scale-125 ${
-              i === index ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/70'
-            }`}
+            className={`w-2 h-2 rounded-full transition-all hover:scale-125 ${i === index ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/70'
+              }`}
           />
         ))}
       </div>
@@ -99,7 +100,28 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
   const [savedListings, addSavedListing, removeSavedListing] = useLocalStorageSet('murge_saved_listings');
   const [joinedGroups, addJoinedGroup] = useLocalStorageSet('murge_joined_groups');
   const [joiningGroup, setJoiningGroup] = useState<string | null>(null);
+  const [showMapView, setShowMapView] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
+  const [selectedListingId, setSelectedListingId] = useState<string | null>(null);
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
   const { shareHousing } = useShare();
+
+  const toggleCompare = (id: string) => {
+    setCompareIds(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(x => x !== id);
+      }
+      if (prev.length >= 4) {
+        toast.info('Maximum 4 listings for comparison');
+        return prev;
+      }
+      return [...prev, id];
+    });
+  };
+
+  const clearCompare = () => setCompareIds([]);
+  const removeFromCompare = (id: string) => setCompareIds(prev => prev.filter(x => x !== id));
 
   useEffect(() => {
     setMounted(true);
@@ -162,10 +184,16 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
 
   const listings = [
     {
+      id: 'listing-1',
       title: '2BR in Mission',
       price: '$2,400/mo',
+      priceNum: 2400,
       available: 'June 1',
       matches: '92% Match',
+      beds: 2,
+      baths: 1,
+      lat: 37.759,
+      lng: -122.419,
       images: [
         'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80',
         'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80',
@@ -173,26 +201,60 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
       ]
     },
     {
+      id: 'listing-2',
       title: 'Studio in SoMa',
       price: '$2,100/mo',
+      priceNum: 2100,
       available: 'May 15',
       matches: '75% Match',
+      beds: 0,
+      baths: 1,
+      lat: 37.778,
+      lng: -122.405,
       images: [
         'https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=800&q=80',
         'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800&q=80'
       ]
     },
     {
+      id: 'listing-3',
       title: '1BR in Nob Hill',
       price: '$2,800/mo',
+      priceNum: 2800,
       available: 'June 15',
       matches: '88% Match',
+      beds: 1,
+      baths: 1,
+      lat: 37.793,
+      lng: -122.416,
       images: [
-        'https://images.unsplash.com/photo-1484154218962-a1c00207bf9a?w=800&q=80',
-        'https://images.unsplash.com/photo-1512918760532-3edbed13ee1e?w=800&q=80'
+        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80'
       ]
     },
   ];
+
+  // Map markers derived from listings
+  const mapMarkers = useMemo(() => listings.map(listing => ({
+    id: listing.id,
+    lat: listing.lat,
+    lng: listing.lng,
+    price: listing.priceNum,
+    title: listing.title,
+    image: listing.images[0],
+    beds: listing.beds,
+    baths: listing.baths,
+  })), []);
+
+  const handleMarkerClick = (marker: { id: string }) => {
+    setSelectedListingId(marker.id);
+    setShowMapModal(false);
+    // Scroll to listing
+    const element = document.getElementById(marker.id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
 
   const roommates = [
     { name: 'Alex Kumar', budget: '$1.2-1.5k', looking: 'Mission', matchPercent: 85 },
@@ -207,6 +269,39 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
 
   return (
     <div className="min-h-screen bg-transparent pb-24">
+      {/* Map Modal */}
+      <MapModal
+        isOpen={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        markers={mapMarkers}
+        onMarkerClick={handleMarkerClick}
+        selectedMarkerId={selectedListingId || undefined}
+      />
+
+      {/* Comparison Tool */}
+      <ComparisonTool
+        isOpen={showCompare}
+        onClose={() => setShowCompare(false)}
+        listings={listings.map(l => ({
+          ...l,
+          image: l.images[0],
+          neighborhood: l.title.split(' in ')[1],
+          sqft: l.beds === 0 ? 450 : l.beds === 1 ? 650 : 900,
+          amenities: ['In-unit laundry', 'Parking', 'Pet-friendly'],
+          walkScore: Math.floor(Math.random() * 20) + 75,
+          transitScore: Math.floor(Math.random() * 20) + 75,
+          commute: `${Math.floor(Math.random() * 20) + 10} min`,
+        }))}
+        selectedIds={compareIds}
+        onRemove={removeFromCompare}
+      />
+
+      {/* Comparison Bar */}
+      <ComparisonBar
+        selectedCount={compareIds.length}
+        onCompare={() => setShowCompare(true)}
+        onClear={clearCompare}
+      />
       {/* Header - Transparent/Glass */}
       <div className="bg-white/10 backdrop-blur-md border-b border-white/20 px-4 sm:px-6 py-4 sticky top-0 z-30">
         <h1 className="text-3xl font-bold text-white mb-4">Housing</h1>
@@ -229,6 +324,18 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
               {tab.label}
             </button>
           ))}
+          {/* Map/List Toggle */}
+          {activeTab === 'listings' && (
+            <button
+              onClick={() => setShowMapModal(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 bg-white/10 text-white hover:bg-white/20 border border-white/10 ml-auto"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+              Map
+            </button>
+          )}
         </div>
 
         {/* AI Assistant CTA - keeping it as a glass button */}
@@ -259,13 +366,17 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
           <div className="space-y-6">
             {listings.map((listing, index) => (
               <div
-                key={index}
+                key={listing.id}
+                id={listing.id}
                 className={`transition-all duration-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                   }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 {/* Immersive Glass Card */}
-                <div className="group relative h-96 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/20">
+                <div className={`group relative h-96 rounded-3xl overflow-hidden shadow-2xl transition-all ${selectedListingId === listing.id
+                    ? 'ring-4 ring-white scale-[1.02]'
+                    : 'ring-1 ring-white/20'
+                  }`}>
                   {/* Background Slideshow */}
                   <ImageSlideshow images={listing.images} />
 
@@ -289,6 +400,19 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
                       </div>
 
                       <div className="flex gap-2">
+                        {/* Compare Button */}
+                        <button
+                          onClick={() => toggleCompare(listing.id)}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-all ${compareIds.includes(listing.id)
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-white/20 backdrop-blur-sm text-white hover:bg-white/30'
+                            }`}
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                        </button>
+                        {/* Share Button */}
                         <button
                           onClick={() => shareHousing({ title: listing.title, price: listing.price })}
                           className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm text-white flex items-center justify-center hover:scale-110 hover:bg-white/30 transition-all"
@@ -297,13 +421,13 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                           </svg>
                         </button>
+                        {/* Save Button */}
                         <button
                           onClick={() => handleSaveListing(listing.title)}
-                          className={`w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-all ${
-                            savedListings.has(listing.title)
+                          className={`w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-all ${savedListings.has(listing.title)
                               ? 'bg-black text-white'
                               : 'bg-white text-black'
-                          }`}
+                            }`}
                         >
                           <svg
                             className="w-5 h-5"
@@ -413,11 +537,10 @@ export function HousingScreen({ onOpenAI }: HousingScreenProps) {
                         <button
                           onClick={() => handleJoinGroup(group.name)}
                           disabled={joiningGroup === group.name || joinedGroups.has(group.name)}
-                          className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                            joinedGroups.has(group.name)
+                          className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${joinedGroups.has(group.name)
                               ? 'bg-white text-black'
                               : 'bg-white/10 border border-white/20 text-white hover:bg-white hover:text-black'
-                          } disabled:opacity-50`}
+                            } disabled:opacity-50`}
                         >
                           {joiningGroup === group.name ? (
                             <span className="flex items-center gap-2">

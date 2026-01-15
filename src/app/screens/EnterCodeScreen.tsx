@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Input } from '../components/Input';
-import { Button } from '../components/Button';
 // @ts-ignore
-import murgeLogoImage from '../../assets/murge-logo.png';
+import murgeLogoImage from '../../assets/murge-logo-final.png';
 
 interface EnterCodeScreenProps {
   onContinue: (code: string) => void;
@@ -11,6 +9,7 @@ interface EnterCodeScreenProps {
 export function EnterCodeScreen({ onContinue }: EnterCodeScreenProps) {
   const [code, setCode] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -24,86 +23,79 @@ export function EnterCodeScreen({ onContinue }: EnterCodeScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden">
-      {/* Background - Clean Gradient */}
-      <div className={`fixed inset-0 transition-opacity duration-1000 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-black to-neutral-950" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-neutral-800/20 via-transparent to-transparent" />
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6 sm:px-8 relative overflow-hidden">
+      {/* Background - Atmospheric & Premium */}
+      <div className={`fixed inset-0 transition-opacity duration-1500 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+        {/* Deep, rich gradients */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_#1a1a1a_0%,_#000000_100%)]" />
+        <div className="absolute top-0 left-0 right-0 h-[50vh] bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
+
+        {/* Animated Glow Effects */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-[100px] animate-pulse" style={{ animationDuration: '7s' }} />
       </div>
 
-      <div
-        className={`w-full max-w-md relative z-10 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-      >
-        {/* Logo - Large & Centered */}
-        <div className="text-center mb-20">
-          <div
-            className={`transition-all duration-1000 delay-300 transform ${mounted ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
-              }`}
-          >
-            <img
-              src={murgeLogoImage}
-              alt="Murge"
-              className="h-24 sm:h-32 mx-auto object-contain brightness-0 invert drop-shadow-2xl"
-            />
+      <div className={`w-full max-w-sm relative z-10 flex flex-col items-center transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+
+        {/* Logo Section */}
+        <div className="mb-16 relative group">
+          <div className={`absolute inset-0 bg-white/20 blur-3xl rounded-full transition-opacity duration-700 ${mounted ? 'opacity-30' : 'opacity-0'}`} />
+          <img
+            src={murgeLogoImage}
+            alt="Murge"
+            className="h-56 w-auto relative z-10 drop-shadow-[0_0_25px_rgba(255,255,255,0.2)] transition-transform duration-700 transform hover:scale-105"
+          />
+        </div>
+
+        {/* Input Form */}
+        <form onSubmit={handleSubmit} className="w-full space-y-8">
+          <div className="space-y-2 text-center">
+            <h1 className="text-xl font-light text-white tracking-[0.2em] uppercase opacity-90">
+              Welcome
+            </h1>
+            <p className="text-xs text-white/40 tracking-wide">
+              Enter your exclusive access code
+            </p>
           </div>
-        </div>
 
-        {/* Input Area - Minimalist */}
-        <div
-          className={`transition-all duration-1000 delay-500 ${mounted ? 'opacity-100' : 'opacity-0'
-            }`}
-        >
-          <form onSubmit={handleSubmit} className="space-y-10">
-            <div className="group relative">
-              <label className="block text-center text-[11px] font-semibold text-white/50 uppercase tracking-wider mb-6">
-                Access Code
-              </label>
-
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="ENTER CODE"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  className="w-full bg-white/5 border border-white/10 py-5 px-6 text-center text-2xl font-medium text-white placeholder-white/20 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all rounded-xl font-mono tracking-wide uppercase"
-                />
-              </div>
-
-              <p className="mt-4 text-center text-xs text-white/40 font-normal flex items-center justify-center gap-2 opacity-0 group-focus-within:opacity-100 transition-opacity">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Contact your recruitment team for access
-              </p>
+          <div className="group relative">
+            <div
+              className={`absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-white/20 via-white/40 to-white/20 opacity-0 transition duration-500 group-hover:opacity-100 ${isFocused ? 'opacity-100 blur-md' : 'blur-sm'}`}
+            />
+            <div className="relative">
+              <input
+                type="text"
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder="CODE"
+                className="block w-full bg-neutral-900/90 text-white placeholder-white/20 border-0 rounded-2xl py-4 px-4 text-center text-xl tracking-[0.3em] font-light focus:ring-0 focus:outline-none focus:bg-neutral-900 transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]"
+                autoComplete="off"
+                spellCheck="false"
+              />
             </div>
+          </div>
 
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={!code}
-                className={`
-                  w-full h-14 bg-white text-black font-semibold text-base rounded-xl
-                  transition-all duration-300
-                  ${!code
-                    ? 'opacity-40 cursor-not-allowed'
-                    : 'opacity-100 hover:bg-white/90 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] hover:scale-[1.02] active:scale-[0.98]'
-                  }
-                `}
-              >
-                Enter
-              </button>
-            </div>
-          </form>
-        </div>
+          <button
+            type="submit"
+            disabled={!code}
+            className={`
+              w-full py-4 rounded-xl text-sm font-semibold tracking-widest uppercase transition-all duration-500
+              ${code
+                ? 'bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.1)] transform hover:-translate-y-0.5'
+                : 'bg-white/5 text-white/20 cursor-not-allowed'
+              }
+            `}
+          >
+            Enter Experience
+          </button>
+        </form>
 
-        {/* Footer Support Link */}
-        <div
-          className={`text-center mt-16 transition-all duration-1000 delay-700 ${mounted ? 'opacity-100' : 'opacity-0'
-            }`}
-        >
-          <button className="text-xs text-white/40 font-medium hover:text-white/80 transition-colors">
-            Need help?
+        {/* Footer */}
+        <div className="mt-12">
+          <button className="text-[10px] text-white/30 hover:text-white/60 transition-colors uppercase tracking-widest">
+            Need Assistance?
           </button>
         </div>
       </div>

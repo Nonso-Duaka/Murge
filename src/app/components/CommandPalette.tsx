@@ -225,11 +225,21 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
 
 // Hook to provide default commands
 export function useCommands(handlers: {
-  onNavigate: (screen: string) => void;
-  onOpenSearch: () => void;
-  onOpenNotifications: () => void;
+  onNavigateDashboard: () => void;
+  onNavigateHousing: () => void;
+  onNavigatePeople: () => void;
+  onNavigateExplore: () => void;
+  onNavigateWorkspace: () => void;
   onOpenProfile: () => void;
   onOpenSettings: () => void;
+  onOpenNotifications: () => void;
+  onOpenSearch: () => void;
+  onOpenAIAgent?: () => void;
+  onOpenChecklist?: () => void;
+  onOpenBudget?: () => void;
+  onOpenNeighborhoodGuide?: () => void;
+  onOpenActivityFeed?: () => void;
+  onOpenCalendar?: () => void;
 }) {
   const commands: Command[] = useMemo(() => [
     {
@@ -239,7 +249,7 @@ export function useCommands(handlers: {
       category: 'navigation',
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>,
       shortcut: '⌘1',
-      action: () => handlers.onNavigate('dashboard'),
+      action: handlers.onNavigateDashboard,
     },
     {
       id: 'nav-housing',
@@ -248,7 +258,7 @@ export function useCommands(handlers: {
       category: 'navigation',
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
       shortcut: '⌘2',
-      action: () => handlers.onNavigate('housing'),
+      action: handlers.onNavigateHousing,
     },
     {
       id: 'nav-people',
@@ -257,7 +267,7 @@ export function useCommands(handlers: {
       category: 'navigation',
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
       shortcut: '⌘3',
-      action: () => handlers.onNavigate('find-people'),
+      action: handlers.onNavigatePeople,
     },
     {
       id: 'nav-explore',
@@ -266,7 +276,7 @@ export function useCommands(handlers: {
       category: 'navigation',
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>,
       shortcut: '⌘4',
-      action: () => handlers.onNavigate('explore'),
+      action: handlers.onNavigateExplore,
     },
     {
       id: 'nav-workspace',
@@ -275,7 +285,7 @@ export function useCommands(handlers: {
       category: 'navigation',
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>,
       shortcut: '⌘5',
-      action: () => handlers.onNavigate('workspace'),
+      action: handlers.onNavigateWorkspace,
     },
     {
       id: 'action-search',
@@ -313,6 +323,54 @@ export function useCommands(handlers: {
       shortcut: ',',
       action: handlers.onOpenSettings,
     },
+    ...(handlers.onOpenChecklist ? [{
+      id: 'action-checklist',
+      title: 'Checklist',
+      description: 'Track your relocation progress',
+      category: 'action' as const,
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
+      action: handlers.onOpenChecklist,
+    }] : []),
+    ...(handlers.onOpenBudget ? [{
+      id: 'action-budget',
+      title: 'Budget Calculator',
+      description: 'Plan your relocation budget',
+      category: 'action' as const,
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      action: handlers.onOpenBudget,
+    }] : []),
+    ...(handlers.onOpenNeighborhoodGuide ? [{
+      id: 'action-neighborhoods',
+      title: 'Neighborhood Guide',
+      description: 'Explore neighborhoods',
+      category: 'action' as const,
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>,
+      action: handlers.onOpenNeighborhoodGuide,
+    }] : []),
+    ...(handlers.onOpenActivityFeed ? [{
+      id: 'action-activity',
+      title: 'Activity Feed',
+      description: 'See community updates',
+      category: 'action' as const,
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>,
+      action: handlers.onOpenActivityFeed,
+    }] : []),
+    ...(handlers.onOpenCalendar ? [{
+      id: 'action-calendar',
+      title: 'Calendar',
+      description: 'Schedule viewings and meetups',
+      category: 'action' as const,
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
+      action: handlers.onOpenCalendar,
+    }] : []),
+    ...(handlers.onOpenAIAgent ? [{
+      id: 'action-ai',
+      title: 'AI Assistant',
+      description: 'Get AI-powered help',
+      category: 'action' as const,
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>,
+      action: handlers.onOpenAIAgent,
+    }] : []),
   ], [handlers]);
 
   return commands;

@@ -21,7 +21,7 @@ export function FavoritesScreen({ onBack }: FavoritesScreenProps) {
   const savedHousingData = [
     { title: '2BR in Mission', price: '$2,400/mo', image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&q=80' },
     { title: 'Studio in SoMa', price: '$2,100/mo', image: 'https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=400&q=80' },
-    { title: '1BR in Nob Hill', price: '$2,800/mo', image: 'https://images.unsplash.com/photo-1484154218962-a1c00207bf9a?w=400&q=80' },
+    { title: '1BR in Nob Hill', price: '$2,800/mo', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80' },
   ].filter(h => savedListings.has(h.title));
 
   const connectedPeopleData = [
@@ -65,17 +65,15 @@ export function FavoritesScreen({ onBack }: FavoritesScreenProps) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
-                activeTab === tab.id
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${activeTab === tab.id
                   ? 'bg-white text-black'
                   : 'bg-white/10 text-white hover:bg-white/20'
-              }`}
+                }`}
             >
               {tab.label}
               {tab.count > 0 && (
-                <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  activeTab === tab.id ? 'bg-black/10' : 'bg-white/20'
-                }`}>
+                <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.id ? 'bg-black/10' : 'bg-white/20'
+                  }`}>
                   {tab.count}
                 </span>
               )}
@@ -102,9 +100,8 @@ export function FavoritesScreen({ onBack }: FavoritesScreenProps) {
               savedHousingData.map((listing, index) => (
                 <div
                   key={listing.title}
-                  className={`group bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden transition-all duration-500 ${
-                    mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                  }`}
+                  className={`group bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden transition-all duration-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                    }`}
                   style={{ transitionDelay: `${index * 75}ms` }}
                 >
                   <div className="flex">
@@ -151,9 +148,8 @@ export function FavoritesScreen({ onBack }: FavoritesScreenProps) {
               connectedPeopleData.map((person, index) => (
                 <div
                   key={person.name}
-                  className={`group bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-4 transition-all duration-500 ${
-                    mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-                  }`}
+                  className={`group bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-4 transition-all duration-500 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                    }`}
                   style={{ transitionDelay: `${index * 75}ms` }}
                 >
                   <div className="flex items-center gap-4">

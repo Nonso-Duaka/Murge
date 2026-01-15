@@ -37,7 +37,7 @@ export function GlobalSearch({ isOpen, onClose, onResultClick }: GlobalSearchPro
     // Housing
     { id: 'h1', type: 'housing', title: '2BR in Mission', subtitle: '$2,400/mo - Available June 1', image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=200&q=80' },
     { id: 'h2', type: 'housing', title: 'Studio in SoMa', subtitle: '$2,100/mo - Available May 15', image: 'https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=200&q=80' },
-    { id: 'h3', type: 'housing', title: '1BR in Nob Hill', subtitle: '$2,800/mo - Available June 15', image: 'https://images.unsplash.com/photo-1484154218962-a1c00207bf9a?w=200&q=80' },
+    { id: 'h3', type: 'housing', title: '1BR in Nob Hill', subtitle: '$2,800/mo - Available June 15', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=200&q=80' },
     // People
     { id: 'p1', type: 'person', title: 'Sarah Chen', subtitle: 'Product Designer at Meta', matchScore: 92 },
     { id: 'p2', type: 'person', title: 'Alex Kumar', subtitle: 'Software Engineer at Stripe', matchScore: 88 },
@@ -110,17 +110,15 @@ export function GlobalSearch({ isOpen, onClose, onResultClick }: GlobalSearchPro
     <div className="fixed inset-0 z-50">
       {/* Backdrop */}
       <div
-        className={`absolute inset-0 bg-black/80 backdrop-blur-xl transition-opacity duration-300 ${
-          mounted ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={`absolute inset-0 bg-black/80 backdrop-blur-xl transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'
+          }`}
         onClick={onClose}
       />
 
       {/* Search Panel */}
       <div
-        className={`absolute inset-x-0 top-0 bg-black/90 backdrop-blur-2xl border-b border-white/10 transition-all duration-300 ${
-          mounted ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
-        }`}
+        className={`absolute inset-x-0 top-0 bg-black/90 backdrop-blur-2xl border-b border-white/10 transition-all duration-300 ${mounted ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+          }`}
       >
         <div className="max-w-2xl mx-auto px-4 py-6">
           {/* Search Input */}
