@@ -39,11 +39,11 @@ export function EnterCodeScreen({ onContinue }: EnterCodeScreenProps) {
 
         {/* Logo Section */}
         <div className="mb-16 relative group">
-          <div className={`absolute inset-0 bg-white/20 blur-3xl rounded-full transition-opacity duration-700 ${mounted ? 'opacity-30' : 'opacity-0'}`} />
+          <div className={`absolute inset-0 bg-white/30 blur-3xl rounded-full transition-opacity duration-700 ${mounted ? 'opacity-60' : 'opacity-0'}`} />
           <img
             src={murgeLogoImage}
             alt="Murge"
-            className="h-56 w-auto relative z-10 drop-shadow-[0_0_25px_rgba(255,255,255,0.2)] transition-transform duration-700 transform hover:scale-105"
+            className="h-56 w-auto relative z-10 drop-shadow-[0_0_40px_rgba(255,255,255,0.6)] transition-transform duration-700 transform hover:scale-105"
           />
         </div>
 
