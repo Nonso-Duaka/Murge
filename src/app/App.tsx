@@ -433,38 +433,7 @@ export default function App() {
         commands={commands}
       />
 
-      {/* Quick Navigation Helper (for demo purposes) */}
-      {currentScreen !== 'enter-code' && currentScreen !== 'select-location' && (
-        <div className="fixed top-4 right-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-lg p-3 text-xs max-w-xs z-50 hidden lg:block">
-          <div className="font-medium text-white mb-2">Quick Nav (⌘K):</div>
-          <div className="space-y-1">
-            <button
-              onClick={() => setCurrentScreen('find-others')}
-              className="block w-full text-left text-white/60 hover:text-white"
-            >
-              → Find Others
-            </button>
-            <button
-              onClick={() => setCurrentScreen('ai-agent')}
-              className="block w-full text-left text-white/60 hover:text-white"
-            >
-              → AI Agent
-            </button>
-            <button
-              onClick={handleOpenChecklist}
-              className="block w-full text-left text-white/60 hover:text-white"
-            >
-              → Checklist
-            </button>
-            <button
-              onClick={handleOpenBudget}
-              className="block w-full text-left text-white/60 hover:text-white"
-            >
-              → Budget Calculator
-            </button>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
