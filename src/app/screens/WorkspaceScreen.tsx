@@ -347,37 +347,39 @@ export function WorkspaceScreen({ cityName = 'San Francisco' }: WorkspaceScreenP
 
           <div ref={messagesEndRef} />
 
-          {/* Input Area - Inside Scrollable Area */}
-          <div className="relative p-4 sm:px-6 mt-4 border-t border-white/10 bg-black/80 backdrop-blur-xl z-30 lg:bg-transparent lg:border-t-0 rounded-2xl">
-            <div className="relative max-w-screen-xl mx-auto">
-              <input
-                type="text"
-                placeholder={`Message #${selectedChannel.replace('sf-', '')}`}
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') handleSendMessage();
-                }}
-                disabled={isSending}
-                className="w-full pl-4 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:bg-white/10 focus:border-white/30 transition-all text-white placeholder-white/30 text-sm backdrop-blur-sm disabled:opacity-50"
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={isSending || !messageInput.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSending ? (
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                )}
-              </button>
-            </div>
+
+        </div>
+
+        {/* Fixed Input Area - Bottom */}
+        <div className="p-4 sm:px-6 border-t border-white/10 bg-black/40 backdrop-blur-xl z-30 mb-safe">
+          <div className="relative max-w-screen-xl mx-auto">
+            <input
+              type="text"
+              placeholder={`Message #${selectedChannel.replace('sf-', '')}`}
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') handleSendMessage();
+              }}
+              disabled={isSending}
+              className="w-full pl-4 pr-12 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:bg-white/10 focus:border-white/30 transition-all text-white placeholder-white/30 text-sm backdrop-blur-sm disabled:opacity-50"
+            />
+            <button
+              onClick={handleSendMessage}
+              disabled={isSending || !messageInput.trim()}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSending ? (
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
       </div>
