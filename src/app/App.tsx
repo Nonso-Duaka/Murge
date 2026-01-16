@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Toaster } from 'sonner';
-// @ts-ignore
-import murgeLogoImage from '../assets/murge-logo-latest.png';
+// Logo import removed as it is no longer used in the overlay
 import { EnterCodeScreen } from './screens/EnterCodeScreen';
 import { SelectLocationScreen } from './screens/SelectLocationScreen';
 import { DashboardScreen } from './screens/DashboardScreen';
@@ -288,18 +287,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Persistent Logo Overlay */}
-      {currentScreen !== 'enter-code' && currentScreen !== 'select-location' && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-white/30 blur-2xl rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-500" />
-            <img
-              src={murgeLogoImage}
-              alt="Murge"
-              className="h-12 w-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.6)] opacity-100 transition-transform duration-300 group-hover:scale-110"
-            />
-          </div>
-        </div>
-      )}
+      {/* Persistent Logo Overlay removed */}
 
       {/* Toast Notifications */}
       <Toaster

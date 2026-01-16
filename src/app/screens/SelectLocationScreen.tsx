@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../components/Button';
-// @ts-ignore
-import murgeLogoImage from '../../assets/murge-logo-latest.png';
+// Logo import removed
 
 
 interface SelectLocationScreenProps {
@@ -78,10 +77,7 @@ export function SelectLocationScreen({ companyName, onSelectLocation, onBack }: 
 
   return (
     <div className="min-h-screen bg-background flex flex-col pb-24 relative">
-      {/* Murge Logo Watermark - Consistent with App Overlay */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none select-none">
-        <img src={murgeLogoImage} alt="Murge" className="h-12 w-auto opacity-100 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
-      </div>
+      {/* Murge Logo Watermark removed */}
 
       {/* Header */}
       <div className="px-4 sm:px-6 pt-6 pb-4">
