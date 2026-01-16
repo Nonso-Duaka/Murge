@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // @ts-ignore
-import murgeLogoImage from '../../assets/murge-logo-new.png';
+import murgeLogoImage from '../../assets/murge-logo-latest.png';
 
 interface EnterCodeScreenProps {
   onContinue: (code: string) => void;

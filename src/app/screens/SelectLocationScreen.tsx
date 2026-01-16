@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '../components/Button';
 // @ts-ignore
-import murgeLogoImage from '../../assets/murge-logo-final.png';
+import murgeLogoImage from '../../assets/murge-logo-latest.png';
 
 
 interface SelectLocationScreenProps {

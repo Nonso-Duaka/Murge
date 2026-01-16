@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../components/Card';
 // @ts-ignore
-import murgeLogoImage from '../../assets/murge-logo.png';
+import murgeLogoImage from '../../assets/murge-logo-latest.png';
 
 interface Activity {
   type: 'person' | 'housing' | 'meetup';

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Toaster } from 'sonner';
 // @ts-ignore
-import murgeLogoImage from '../assets/murge-logo-final.png';
+import murgeLogoImage from '../assets/murge-logo-latest.png';
 import { EnterCodeScreen } from './screens/EnterCodeScreen';
 import { SelectLocationScreen } from './screens/SelectLocationScreen';
 import { DashboardScreen } from './screens/DashboardScreen';
